@@ -7,7 +7,6 @@
  * See http://www.gnu.org/licenses/gpl.html for more information.
  */
 
-package bicycle;
 
 /**
  * Modelizes a bicycle.
@@ -42,7 +41,7 @@ public class Bicycle {
     public Bicycle() {
         this.model = "Mountain bike";
         this.frontSprocket = 3;
-        this.rearSprocket = 1;
+        this.rearSprocket = 3;
         this.nFrontSprockets = 3;
         this.nRearSprockets = 7;
         this.v = 0;
@@ -58,7 +57,11 @@ public class Bicycle {
     public Bicycle(int nFrontSprockets, int nRearSprockets, double v) {
         this.model = "Mountain bike";
         this.nFrontSprockets = nFrontSprockets;
-        this.nRearSprockets = nRearSprockets;
+        if (nRearSprockets <= 3) {
+            this.nRearSprockets = nRearSprockets;
+        } else {
+            this.nRearSprockets = 3;
+        }
         this.frontSprocket = nFrontSprockets;
         this.rearSprocket = 1;
         this.v = v;
@@ -76,10 +79,27 @@ public class Bicycle {
      */
     public Bicycle(String model, int frontSprocket, int rearSprocket, int nFrontSprockets, int nRearSprockets, double v) {
         this.model = model;
-        this.frontSprocket = frontSprocket;
-        this.rearSprocket = rearSprocket;
+        
         this.nFrontSprockets = nFrontSprockets;
-        this.nRearSprockets = nRearSprockets;
+        if (nRearSprockets <= 3) {
+            this.nRearSprockets = nRearSprockets;
+        } else {
+            this.nRearSprockets = 3;
+        }
+        if (frontSprocket < 1) {
+            this.frontSprocket = 1;
+        } else if (frontSprocket > nFrontSprockets) {
+            this.frontSprocket = this.nFrontSprockets;
+        } else {
+            this.frontSprocket = frontSprocket;
+        }
+        if (frontSprocket < 1) {
+            this.rearSprocket = 1;
+        } else if (frontSprocket > nRearSprockets) {
+            this.rearSprocket = this.nRearSprockets;
+        } else {
+            this.rearSprocket = rearSprocket;
+        }
         this.v = v;
     }
 
@@ -156,16 +176,22 @@ public class Bicycle {
         return rearSprocket;
     }
 
+    //modificat
     public void setRearSprocket(int rearSprocket) {
-        this.rearSprocket = rearSprocket;
+        if (rearSprocket >= 1 && rearSprocket <= this.nRearSprockets){
+            this.rearSprocket = rearSprocket;
+        }
     }
 
     public int getFrontSprocket() {
         return frontSprocket;
     }
 
+    //modificat
     public void setFrontSprocket(int frontSprocket) {
-        this.frontSprocket = frontSprocket;
+        if (frontSprocket >= 1 && frontSprocket <= this.nFrontSprockets){
+            this.frontSprocket = frontSprocket;
+        }
     }
 
     public double getV() {
@@ -174,5 +200,50 @@ public class Bicycle {
 
     public void setV(double v) {
         this.v = v;
+    }
+    
+    //metode nou stop
+    public void stop() {
+        this.v = 0;
+    }
+    
+    //metode nou slowDown
+    public boolean slowDown() {
+        boolean hasChanged = false;
+        if (this.frontSprocket != 1) { //si no tenim el plat més petit
+            while (this.rearSprocket < this.nRearSprockets - 1) { //fins que tinguem el segon pinyó més gran
+                this.changeRearSprocket(1); //pujem pinyó
+            }
+            while (this.frontSprocket > 1) { //fins que tenim el plat més petit
+                this.changeFrontSprocket(-1); //baixem plat
+            }
+            hasChanged = true;
+        } else { //si tenim el plat més petit
+            while (this.rearSprocket < this.nRearSprockets) { //fins que tinguem el pinyó més gran
+                this.changeRearSprocket(1);//pujem pinyó
+            }
+            hasChanged = true;
+        }
+        return hasChanged;
+    }
+    
+    //metode nou speedUp
+    public boolean speedUp() {
+        boolean hasChanged = false;
+        if (this.frontSprocket != this.nFrontSprockets) {  //si no tenim el plat més gran
+            while (this.rearSprocket > 2) { //fins que tinguem el segon pinyó més petit
+                this.changeRearSprocket(-1); //baixem pinyó
+            }
+            while (this.frontSprocket > this.nFrontSprockets) { //fins que tenim el plat més gran
+                this.changeFrontSprocket(1); //pujem plat
+            }
+            hasChanged = true;
+        } else { //si tenim el plat més gran
+            while (this.rearSprocket < 1) { //fins que tinguem el pinyó més petit
+                this.changeRearSprocket(-1); //baixem pinyó
+            }
+            hasChanged = true;
+        }
+        return hasChanged;
     }
 }
